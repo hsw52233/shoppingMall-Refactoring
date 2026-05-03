@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.CategoryMapper">
+
+
+	<select id="getCategoryList" resultType="com.example.first.vo.Category">
+		
+		SELECT
+			category_no categoryNo,
+			category_title categoryTitle,
+			update_date updateDate,
+			create_date createDate
+		FROM category
+	
+	
+	</select>
+	
+	<insert id = "categoryAdd" parameterType="com.example.first.vo.Category">
+		INSERT INTO category(category_title)
+		VALUES
+			(#{categoryTitle})
+	
+	</insert>
+	
+	<delete id="remove" parameterType="int">
+		DELETE FROM category WHERE category_no=#{categoryNo}
+	
+	</delete>
+	
+	
+	<update id="categoryModify" parameterType="com.example.first.vo.Category">
+	
+		UPDATE 
+			 category
+			SET
+				category_title = #{categoryTitle}
+		WHERE category_no = #{categoryNo}
+	</update>
+	
+	<select id="getCategoryNo" parameterType="Integer" resultType="com.example.first.vo.Category"> 
+		SELECT
+			category_no categoryNo,
+			category_title categoryTitle,
+			update_date updateDate,
+			create_date createDate
+		FROM category
+		WHERE category_no = #{categoryNo}
+	
+	</select>
+
+
+
+</mapper>

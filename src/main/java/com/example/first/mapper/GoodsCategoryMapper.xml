@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.GoodsCategoryMapper">
+
+	<insert id="insertGoodsCategory" parameterType="com.example.first.vo.GoodsCategory">
+	
+		INSERT INTO goods_category 
+		(goods_no
+		, category_no)
+        VALUES (#{goodsNo}, #{categoryNo});
+			
+	
+	</insert>
+	
+	
+	<select id="getCategoryList" resultType="com.example.first.vo.Category">
+	
+		SELECT	
+			category_no categoryNo,
+			category_title categoryTitle,
+			update_date updateDate,
+			create_date createDate
+			
+		FROM
+			category
+	
+	
+	</select>
+	
+	<delete id="remove" parameterType="com.example.first.vo.GoodsCategory">
+		DELETE FROM goods_category where goods_no = #{goodsNo}
+	
+	</delete>
+	
+	<delete id="deleteGoodsCategory" parameterType="com.example.first.vo.GoodsCategory">
+		DELETE FROM goods_category where goods_no = #{goodsNo}
+	</delete>
+
+
+
+</mapper>

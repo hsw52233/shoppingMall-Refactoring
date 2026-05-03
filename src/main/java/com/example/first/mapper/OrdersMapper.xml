@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.OrdersMapper">
+	<!--  Author : 이동윤 주문내역 리스트 -->
+	<select id="selectOrdersList" resultType="Map" parameterType="Map">
+		select 
+			p.payment_no paymentNo,
+		    p.address_no addressNo,
+		    p.payment_price paymentPrice,
+		    p.payment_method paymentMethod,
+		    a.address_detail addressDetail,
+		    p.payment_state paymentState
+		from payment p 
+		inner join address a on p.address_no = a.address_no 
+		where customer_mail = #{customerMail}
+		order by p.payment_no desc
+		limit #{beginRow},#{rowPerPage}
+	</select>
+	<!-- 이동윤 : 고객 주문목록 totalRow -->
+	<select id="getTotalRowByCustomer">
+		select count(*)
+		from payment p 
+		inner join address a on p.address_no = a.address_no 
+		where customer_mail = #{customerMail}
+	</select>
+	
+	<!-- 결제 후 주문목록에 추가 -->
+	<insert id="insertOrder" parameterType="com.example.first.vo.Orders">
+		insert into orders(
+			goods_no,
+			orders_amount,
+			payment_no
+		) values (
+			#{goodsNo},
+			#{ordersAmount},
+			#{paymentNo}
+		)
+	</insert>
+	<!-- payment 안에 있는 주문목록 -->
+	<select id="selectOrderListByPayment" resultType="Map">
+		select 
+			o.payment_no paymentNo,
+			o.orders_no ordersNo,
+			o.goods_no goodsNo,
+			gf.goods_file_name goodsFileName,
+			gf.goods_file_ext goodsFileExt,
+			g.goods_title goodsTitle,
+			g.goods_memo goodsMemo,
+			o.orders_amount ordersAmount,
+			g.goods_price * o.orders_amount totalPrice,
+			p.payment_state paymentState
+		from orders o
+		inner join goods g on o.goods_no = g.goods_no
+		inner join payment p on o.payment_no = p.payment_no
+		left join (	select 
+						gf.goods_no,
+						gf.goods_file_name,
+						gf.goods_file_ext,
+						row_number() over (partition by gf.goods_no order by gf.goods_file_name) as row_num
+					from goods_file gf
+				) gf on gf.goods_no = o.goods_no and gf.row_num = 1
+		where o.payment_no = #{paymentNo}
+	</select>
+	
+</mapper>

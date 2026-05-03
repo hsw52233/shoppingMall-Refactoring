@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.GoodsFileMapper">
+	<!-- 이동윤 파일추가 -->
+	<insert id="insertGoodsFile" parameterType="com.example.first.vo.GoodsFile">
+		insert into goods_file(
+			goods_no,
+			goods_file_name,
+			goods_file_origin,
+			goods_file_ext,
+			goods_file_type,
+			goods_file_size
+		) values (
+			#{goodsNo},
+			#{goodsFileName},
+			#{goodsFileOrigin},
+			#{goodsFileExt},
+			#{goodsFileType},
+			#{goodsFileSize}
+		)
+	</insert>
+	<!-- 이동윤 해당 굿즈 파일 리스트 -->
+	<select id="selectGoodsFileListByGoods" resultType="com.example.first.vo.GoodsFile">
+		select
+			goods_file_no goodsFileNo,
+			goods_no goodsNo,
+			goods_file_name goodsFileName,
+			goods_file_origin goodsFileOrigin,
+			goods_file_ext goodsFileExt,
+			goods_file_type goodsFileType,
+			goods_file_size goodsFileSize
+		from goods_file
+		where goods_no = #{goodsNo}
+	</select>
+</mapper>

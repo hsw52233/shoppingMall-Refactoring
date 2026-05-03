@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.PaymentMapper" >
+	<update id="paymentModifyActive"
+	parameterType="com.example.first.vo.Payment">
+	
+		UPDATE payment
+		SET payment_state = #{paymentState}
+		WHERE payment_no = #{paymentNo}
+	</update>
+	
+	
+	
+	
+	<!-- 결제 추가 -->
+	<insert id="insertPayment" useGeneratedKeys="true" keyProperty="paymentNo">
+		insert into payment(
+			address_no,
+			payment_price,
+			payment_method
+		) values (
+			#{addressNo},
+			#{paymentPrice},
+			#{paymentMethod}
+		)
+	</insert>
+	<!-- 결제상태 변경 -->
+	<update id="updatePaymentState" parameterType="com.example.first.vo.Payment">
+		update payment 
+		set payment_state = #{paymentState}
+		where payment_no = #{paymentNo}
+	</update>
+</mapper>

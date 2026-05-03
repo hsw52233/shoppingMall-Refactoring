@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.GoodsMapper">
+
+
+	<delete id= "removeGoodsFile" parameterType="int">
+	
+		DELETE FROM goods_file WHERE goods_no = #{goodsNo}
+	</delete>
+	
+	
+	<delete id="removeGoods" parameterType="int">
+	
+		 
+		DELETE FROM goods WHERE goods_no = #{goodsNo}
+	
+	</delete>
+
+	<select id="selectStaffCount"
+			resultType="int">
+		SELECT COUNT(*) FROM staff
+	</select>
+
+
+	<!-- 하상우 ) '재고있음' 활셩화 -->
+	<update id="goodsModifyActive"
+	parameterType="com.example.first.vo.Goods">
+	UPDATE goods
+	SET goods_state = #{goodsState}
+	WHERE goods_no = #{goodsNo}
+</update>
+
+	<!-- 하상우 ) 관리자 상품 수정 -->
+	
+	<update id="goodsModify" parameterType="com.example.first.vo.Goods">
+		UPDATE goods
+			SET
+				goods_title = #{goodsTitle},
+				goods_memo = #{goodsMemo},
+				goods_price = #{goodsPrice}
+		WHERE goods_no = #{goodsNo}
+	
+	</update>
+	
+	<select id="getGoodsNo" parameterType="int" resultType="com.example.first.vo.Goods">
+		SELECT
+			goods_no goodsNo,	
+			goods_title goodsTitle,
+			goods_memo goodsMemo,
+			goods_price goodsPrice,
+			goods_state goodsState,
+			update_date updateDate,
+			create_date createDate,
+			category_no categoryNo
+			
+		FROM goods
+		WHERE goods_no = #{goodsNo}
+	
+	</select>
+	
+
+	<!-- 하상우 ) 관리자 상품 추가 -->
+<insert id="goodsAdd" parameterType="com.example.first.vo.Goods">
+    <selectKey resultType="int" keyProperty="goodsNo" order="AFTER">
+        SELECT last_insert_id()
+    </selectKey>
+
+    INSERT INTO goods (goods_title, goods_memo, goods_price, goods_state, category_no)
+    VALUES (#{goodsTitle}, #{goodsMemo}, #{goodsPrice}, #{goodsState}, #{categoryNo})
+</insert>
+
+
+
+	<!-- 하상우 ) 관리자 상품 리스트 조회 -->
+	<select id="getGoodsList" parameterType="Map" resultType="com.example.first.vo.Goods">
+		SELECT 
+			g.goods_no goodsNo,	
+			g.goods_title goodsTitle,
+			g.goods_memo goodsMemo,
+			g.goods_price goodsPrice,
+			g.goods_state goodsState,
+			g.update_date updateDate,
+			g.create_date createDate,
+			g.category_no categoryNo
+			
+		FROM goods g
+		ORDER BY goodsNo DESC
+	</select>
+
+
+	<!--  Author : 이동윤 상품상세정보 -->
+	<select id="selectGoodsOne">
+		select 
+			g.goods_no goodsNo,
+		    g.goods_title goodsTitle,
+		    g.goods_memo goodsMemo,
+		    g.goods_price goodsPrice,
+		    g.goods_state goodsState,
+		    c.category_title categoryTitle,
+		    g.category_no categoryNo
+		from goods g
+		inner join category c on g.category_no = c.category_no
+		where g.goods_no = #{goodsNo}
+	</select>
+	
+	<!--  Author : 이동윤 상품별 리스트 -->
+	<select id="selectGoodsList" resultType="Map" parameterType="com.example.first.vo.Page">
+		select 
+			g.goods_no goodsNo,
+		    g.goods_title goodsTitle,
+		    g.goods_memo goodsMemo,
+		    g.goods_state goodsState,
+			g.category_no categoryNo,
+		    c.category_title categoryTitle,
+		    gf.goods_file_name goodsFileName,
+		    gf.goods_file_ext goodsFileExt
+		from goods g
+		inner join category c on g.category_no = c.category_no
+		left join (select
+			        goods_no, 
+			        goods_file_name, 
+			        goods_file_ext, 
+			        row_number() over (partition by goods_no order by goods_file_name) firstFile
+			    from goods_file
+			) gf on g.goods_no = gf.goods_no and gf.firstFile = 1
+		<where>
+			<if test="categoryNo != null and categoryNo != ''">
+				g.category_no = #{categoryNo}
+			</if>
+			<if test="searchTitle != null and searchTitle != ''">
+				and g.goods_title like concat('%',#{searchTitle},'%')
+			</if>
+		</where>
+		order by goodsNo desc
+		limit #{beginRow},#{rowPerPage}
+	</select>
+	
+	<!--  Author : 이동윤 상품별 카운트 -->
+	<select id="goodsLastPage" parameterType="Map">
+		select count(*)
+		from goods g
+		inner join category c on g.category_no = c.category_no
+		<where>
+			<if test="categoryNo != null and categoryNo != ''">
+				g.category_no = #{categoryNo}
+			</if>
+		</where>
+	</select>
+</mapper>

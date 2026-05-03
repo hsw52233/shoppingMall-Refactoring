@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.BoardMapper">
+
+
+	<select id="getReviewList" parameterType="com.example.first.vo.Board">
+		SELECT
+			orders_no ordersNo,
+			board_content boardContent,
+			update_date updateDate,
+			create_date createDate
+		FROM board
+	</select>
+
+
+	<delete id="remove" parameterType="com.example.first.vo.Board">
+	
+		DELETE FROM board WHERE orders_no = #{ordersNo}
+	
+	</delete>
+
+
+	<!-- 후기 입력 -->
+	<insert id="insertReviews">
+		insert into board(
+			orders_no,
+			board_content
+		) values (
+			#{ordersNo},
+			#{boardContent}
+		)
+	</insert>
+	<!-- 후기 중복방지 -->
+	<select id="selectReviewsByOrders">
+		select count(*)
+		from board
+		where orders_no = #{ordersNo}
+	</select>
+	
+	<!-- 상품별로/ 상품전체 후기 리스트 -->
+	<select id="selectReviewListByGoods" resultType="Map">
+		select 
+			b.orders_no ordersNo,
+		    b.board_content boardContent,
+		    b.update_date updateDate
+		from board b
+		inner join orders o on o.orders_no = b.orders_no
+		<where>
+			<if test="goodsNo != null and goodsNo != ''">
+				 o.goods_no = #{goodsNo}
+			</if>
+		</where>
+		order by b.orders_no desc
+	</select>
+	
+	<!-- 고객 댓글 리스트 -->
+	<select id="selectReviewsListByCustomer" resultType="Map">
+		select 
+			b.orders_no ordersNo,
+		    b.board_content boardContent,
+		    b.create_date createDate,
+	        o.goods_no goodsNo
+		from board b
+		inner join orders o on b.orders_no = o.orders_no
+		inner join payment p on o.payment_no = p.payment_no
+		inner join address a on p.address_no = a.address_no
+	<where>
+		<if test="customerMail != null and customerMail != '' ">
+			a.customer_mail = #{customerMail}
+		</if>
+	</where>
+	</select>		
+</mapper>

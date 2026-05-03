@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.first.mapper.AddressMapper">
+
+
+	<delete id="removeAddress" parameterType="com.example.first.vo.Address">
+		DELETE FROM address WHERE customer_mail = #{customerMail}
+	
+	</delete>
+	
+	<!-- 하상우 ) 관리자 회원 상세 페이지  -->
+	
+	<select id="getAddressByCustomerMail" parameterType="String" resultType="com.example.first.vo.Address">
+    SELECT
+        address_no AS addressNo,
+        customer_mail AS customerMail,
+        address_detail AS addressDetail,
+        update_date AS addressUpdateDate,
+        create_date AS addressCreateDate
+    FROM Address
+    WHERE customer_mail = #{customerMail}
+</select>
+	
+	
+	
+	<select id="selectAddressList">
+		select
+			address_no addressNo,
+			address_detail addressDetail
+		from address
+		where customer_mail=#{customerMail}
+	</select>
+	
+	<insert id="insertAddAddress" parameterType="com.example.first.vo.Address">
+		insert into address(
+			 customer_mail,
+			 address_detail
+			 )values(
+			 #{customerMail},
+			 #{addressDetail}
+			 )
+	</insert>
+</mapper>
